@@ -8,7 +8,7 @@ function addMessage(event) {
     if (!messageText) return;
     const messageDiv = document.createElement('div');
     messageDiv.className = 'message user';
-    messageDiv.innerHTML = `<p>${messageText}</p>`;
+    messageDiv.innerHTML = `<p class="bubble">${messageText}</p>`;
 
     messagesContainer.appendChild(messageDiv);
     input.value = '';
