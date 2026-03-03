@@ -1,3 +1,5 @@
+@import 'tailwindcss';
+
 :root {
     /* colors */
     --color-Dark-Purple: rgb(24, 19, 24);
