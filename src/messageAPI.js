@@ -4,7 +4,7 @@ import './styles.css';
 class ChatMessage extends HTMLElement {
     connectedCallback() {
         const role = (this.getAttribute('role') || 'ai').toLowerCase();
-        const text = this.getAttribute('text') || this.textContent || '';
+        const text = (this.textContent || '').trim();
         const isUser = role === 'user';
 
         const wrapperClass = isUser ? 'text-right' : 'text-left';
@@ -15,11 +15,9 @@ class ChatMessage extends HTMLElement {
 
         this.innerHTML = `
       <div class="${wrapperClass}">
-        <p class="${bubbleClass}"></p>
+        <p class="${bubbleClass}">${text}</p>
       </div>
     `;
-
-        this.querySelector('p').textContent = text;
     }
 }
 
@@ -38,7 +36,7 @@ function addMessage(e) {
 
     const el = document.createElement('chat-message');
     el.setAttribute('role', 'user');
-    el.setAttribute('text', messageText);
+    el.textContent = messageText.trim();
 
     messagesContainer.appendChild(el);
     textarea.value = '';
