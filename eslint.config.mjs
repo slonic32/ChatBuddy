@@ -10,6 +10,6 @@ export default defineConfig([
         extends: ['js/recommended'],
         languageOptions: { globals: globals.browser },
     },
-    { files: ['**/*.js'], languageOptions: { sourceType: 'commonjs' } },
+    { files: ['**/*.js'], languageOptions: { sourceType: 'module' } },
     prettier,
 ]);

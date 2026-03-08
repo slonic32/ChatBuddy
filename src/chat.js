@@ -1,5 +1,3 @@
-import './styles.css';
-
 // custom element
 class ChatMessage extends HTMLElement {
     connectedCallback() {
@@ -23,23 +21,21 @@ class ChatMessage extends HTMLElement {
 
 customElements.define('chat-message', ChatMessage);
 
-const form = document.querySelector('.input-area');
-const textarea = form?.querySelector('textarea');
-const messagesContainer = document.querySelector('.messages');
+export default function printMessage(root, msg, newMsg = false) {
+    if (newMsg) {
+        const el = document.createElement('chat-message');
+        el.setAttribute('role', msg.role);
+        el.textContent = msg.text.trim();
+        root.appendChild(el);
+    } else {
+        const el = root.lastElementChild;
+        if (el && el.tagName.toLowerCase() === 'chat-message') {
+            const currentText = el.textContent || '';
+            const nextText = msg.text.trim();
 
-function addMessage(e) {
-    e.preventDefault();
-    if (!textarea || !messagesContainer) return;
-
-    const messageText = textarea.value.trim();
-    if (!messageText) return;
-
-    const el = document.createElement('chat-message');
-    el.setAttribute('role', 'user');
-    el.textContent = messageText.trim();
-
-    messagesContainer.appendChild(el);
-    textarea.value = '';
+            const noSpaceBefore = /^[,.;:!?)]/;
+            const needsSpace = currentText && nextText && !/\s$/.test(currentText) && !noSpaceBefore.test(nextText);
+            el.textContent = currentText + (needsSpace ? ' ' : '') + msg.text.trim();
+        }
+    }
 }
-
-form.addEventListener('submit', addMessage);
