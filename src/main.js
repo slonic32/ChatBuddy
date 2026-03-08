@@ -11,7 +11,7 @@ const chatMessages = [];
 async function addMessage(e) {
     e.preventDefault();
 
-    if (!textarea || !messagesContainer) return;
+    if (!textarea || !messagesContainer || !submitButton) return;
 
     const messageText = textarea.value.trim();
     if (!messageText) return;
@@ -25,7 +25,7 @@ async function addMessage(e) {
 
     const answerText = await sendMessage(messagesContainer, chatMessages);
 
-    chatMessages.push({ role: 'ai', content: answerText });
+    chatMessages.push({ role: 'assistant', content: answerText });
 
     textarea.value = '';
     submitButton.disabled = false; // Re-enable

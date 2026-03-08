@@ -1,7 +1,7 @@
 // custom element
 class ChatMessage extends HTMLElement {
     connectedCallback() {
-        const role = (this.getAttribute('role') || 'ai').toLowerCase();
+        const role = (this.getAttribute('role') || 'assistant').toLowerCase();
         const text = (this.textContent || '').trim();
         const isUser = role === 'user';
 
@@ -35,7 +35,7 @@ export default function printMessage(root, msg, newMsg = false) {
 
             const noSpaceBefore = /^[,.;:!?)]/;
             const needsSpace = currentText && nextText && !/\s$/.test(currentText) && !noSpaceBefore.test(nextText);
-            el.textContent = currentText + (needsSpace ? ' ' : '') + msg.content.trim();
+            el.textContent = currentText + (needsSpace ? ' ' : '') + nextText;
         }
     }
 }

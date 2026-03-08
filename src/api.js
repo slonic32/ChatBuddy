@@ -19,6 +19,12 @@ export default async function sendMessage(root, msgs) {
             }),
         });
 
+        if (!response.ok || !response.body) {
+            const errorText = await response.text();
+            console.log('API error:', response.status, errorText);
+            return 'Connection error. Please try again later.';
+        }
+
         const reader = response.body?.getReader();
         if (!reader) {
             throw new Error('Response body is not readable');
@@ -31,8 +37,10 @@ export default async function sendMessage(root, msgs) {
 
         let isFirstChunk = true; //flag for first chunk
 
+        let isEnd = false;
+
         try {
-            while (true) {
+            while (!isEnd) {
                 const { done, value } = await reader.read();
                 if (done) break;
 
@@ -49,7 +57,10 @@ export default async function sendMessage(root, msgs) {
 
                     if (line.startsWith('data: ')) {
                         const data = line.slice(6);
-                        if (data === '[DONE]') break;
+                        if (data === '[DONE]') {
+                            isEnd = true;
+                            break;
+                        }
 
                         try {
                             const parsed = JSON.parse(data);
@@ -57,16 +68,16 @@ export default async function sendMessage(root, msgs) {
                             if (content) {
                                 if (isFirstChunk) {
                                     isFirstChunk = false;
-                                    printMessage(root, { role: 'ai', content: content }, true); // Print first chunk
+                                    printMessage(root, { role: 'assistant', content: content }, true); // Print first chunk
                                 } else {
-                                    printMessage(root, { role: 'ai', content: content }, false); // Append  chunks to the same message
+                                    printMessage(root, { role: 'assistant', content: content }, false); // Append  chunks to the same message
                                 }
 
                                 answer += content;
                             }
                         } catch (e) {
                             // Ignore invalid JSON
-                            console.log('Error: ', e);
+                            console.log('Chunk Error: ', e);
                         }
                     }
                 }
