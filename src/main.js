@@ -10,19 +10,22 @@ const chatMessages = [];
 
 async function addMessage(e) {
     e.preventDefault();
-    submitButton.disabled = true; // Disable to prevent multiple submissions
+
     if (!textarea || !messagesContainer) return;
 
     const messageText = textarea.value.trim();
     if (!messageText) return;
-    const msg = { role: 'user', text: messageText };
+
+    submitButton.disabled = true; // Disable to prevent multiple submissions
+
+    const msg = { role: 'user', content: messageText };
     chatMessages.push(msg);
 
     printMessages(messagesContainer, msg, true); // Print only the latest message
 
-    const answerText = await sendMessage(messagesContainer, messageText);
+    const answerText = await sendMessage(messagesContainer, chatMessages);
 
-    chatMessages.push({ role: 'ai', text: answerText });
+    chatMessages.push({ role: 'ai', content: answerText });
 
     textarea.value = '';
     submitButton.disabled = false; // Re-enable

@@ -4,7 +4,7 @@ const API_KEY = import.meta.env.VITE_OPENROUTER_API_KEY;
 const MODEL = import.meta.env.VITE_OPENROUTER_MODEL;
 const URL = import.meta.env.VITE_OPENROUTER_URL;
 
-export default async function sendMessage(root, msg) {
+export default async function sendMessage(root, msgs) {
     try {
         const response = await fetch(URL, {
             method: 'POST',
@@ -14,7 +14,7 @@ export default async function sendMessage(root, msg) {
             },
             body: JSON.stringify({
                 model: MODEL,
-                messages: [{ role: 'user', content: msg }],
+                messages: msgs,
                 stream: true,
             }),
         });
@@ -57,9 +57,9 @@ export default async function sendMessage(root, msg) {
                             if (content) {
                                 if (isFirstChunk) {
                                     isFirstChunk = false;
-                                    printMessage(root, { role: 'ai', text: content }, true); // Print first chunk
+                                    printMessage(root, { role: 'ai', content: content }, true); // Print first chunk
                                 } else {
-                                    printMessage(root, { role: 'ai', text: content }, false); // Append  chunks to the same message
+                                    printMessage(root, { role: 'ai', content: content }, false); // Append  chunks to the same message
                                 }
 
                                 answer += content;
