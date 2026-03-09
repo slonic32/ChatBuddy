@@ -6,7 +6,12 @@ const textarea = form?.querySelector('textarea');
 const submitButton = form?.querySelector('button');
 const messagesContainer = document.querySelector('.messages');
 
-const chatMessages = [];
+// chat history
+const oldMessagesElements = document.querySelectorAll('.messages chat-message');
+const chatMessages = Array.from(oldMessagesElements).map((element) => ({
+    role: element.getAttribute('role'),
+    content: element.textContent,
+}));
 
 async function addMessage(e) {
     e.preventDefault();
@@ -15,6 +20,8 @@ async function addMessage(e) {
 
     const messageText = textarea.value.trim();
     if (!messageText) return;
+
+    textarea.value = '';
 
     submitButton.disabled = true; // Disable to prevent multiple submissions
 
@@ -27,7 +34,6 @@ async function addMessage(e) {
 
     chatMessages.push({ role: 'assistant', content: answerText });
 
-    textarea.value = '';
     submitButton.disabled = false; // Re-enable
 }
 
