@@ -2,7 +2,7 @@ const API_KEY = import.meta.env.VITE_OPENROUTER_API_KEY;
 const MODEL = import.meta.env.VITE_OPENROUTER_MODEL;
 const URL = import.meta.env.VITE_OPENROUTER_URL;
 
-export async function postMessage(messageHistory) {
+export async function sendQuestion(messageHistory) {
     try {
         const answer = await fetch(URL, {
             method: 'POST',
@@ -17,9 +17,10 @@ export async function postMessage(messageHistory) {
             }),
         });
         const data = await answer.json();
+
         return data.choices[0].message.content;
     } catch (error) {
         console.log('API error: ', error);
-        return {};
+        return 'Connection error. Please repeat your question.';
     }
 }
