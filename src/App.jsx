@@ -3,84 +3,71 @@ import './App.css';
 import ChatPanel from './components/ChatPanel/ChatPanel';
 import Sidebar from './components/Sidebar/Sidebar';
 import Footer from './components/Footer/Footer';
-import { getMessageHistory, postNewChat, postNewMessage } from './api/messages';
+
+import { getMessagesByConversation, postNewMessage } from './api/messages';
 import { sendQuestion } from './api/api';
 import Loader from './components/Loader/Loader';
 
 function App() {
-    const [messageHistory, setMessageHistory] = useState([]);
+    const [conversations, setConversations] = useState([]);
+    const [messages, setMessages] = useState([]);
     const [isLoading, setIsLoading] = useState(false);
     const [activeChat, setActiveChat] = useState(null);
-    useEffect(() => {
-        async function fetchMessageHistory() {
-            try {
-                setIsLoading(true);
-                const history = await getMessageHistory();
 
-                setMessageHistory(history ?? []);
-                if (history && history.length) {
-                    setActiveChat(history[0].id);
-                }
+    useEffect(() => {
+        async function fetchMessages() {
+            if (!activeChat) {
+                setMessages([]);
+                return;
+            }
+
+            try {
+                const chatMessages = await getMessagesByConversation(activeChat);
+                setMessages(chatMessages ?? []);
             } catch (error) {
-                console.log('Error fetching message history:', error);
-                setMessageHistory([]);
-            } finally {
-                setIsLoading(false);
+                console.error('Failed to get messages:', error);
             }
         }
 
-        fetchMessageHistory();
-    }, []);
-
-    async function createNewChat(newChatHeader) {
-        setIsLoading(true);
-        const newChat = await postNewChat(newChatHeader);
-
-        setMessageHistory((prevHistory) => [...structuredClone(prevHistory), newChat]);
-
-        setActiveChat(newChat.id);
-        setIsLoading(false);
-    }
+        fetchMessages();
+    }, [activeChat]);
 
     async function sendMessage(messageContent, chatId = activeChat) {
-        setIsLoading(true);
+        if (!chatId) {
+            return;
+        }
 
-        // update chat
-        const chatWithNewMessage = await postNewMessage('user', messageContent, chatId);
+        try {
+            setIsLoading(true);
 
-        setMessageHistory((prevHistory) =>
-            prevHistory.map((chat) => (chat.id === chatId ? { ...chat, messages: chatWithNewMessage } : chat)),
-        );
+            const messagesWithUserQuestion = await postNewMessage(chatId, 'user', messageContent);
+            setMessages(messagesWithUserQuestion);
 
-        // get answer
-        const answer = await sendQuestion(
-            chatWithNewMessage.map((message) => ({ role: message.role, content: message.content })),
-        );
+            const answer = await sendQuestion(
+                messagesWithUserQuestion.map((message) => ({ role: message.role, content: message.content })),
+            );
 
-        // update chat
-        const chatWithAnswer = await postNewMessage('assistant', answer, chatId);
-
-        setMessageHistory((prevHistory) =>
-            prevHistory.map((chat) => (chat.id === chatId ? { ...chat, messages: chatWithAnswer } : chat)),
-        );
-
-        setIsLoading(false);
+            const messagesWithAssistantAnswer = await postNewMessage(chatId, 'assistant', answer);
+            setMessages(messagesWithAssistantAnswer);
+        } catch (error) {
+            console.error('Failed to post message:', error);
+        } finally {
+            setIsLoading(false);
+        }
     }
 
     return (
         <div className="min-h-screen bg-slate-950 text-slate-100 mx-auto flex max-w-5xl flex-col px-4">
             <main className="flex flex-1 min-h-0 min-w-150 gap-8 py-6 max-h-[85vh]">
                 <Sidebar
-                    chatsList={messageHistory.map((chat) => {
-                        return { id: chat.id, header: chat.header };
-                    })}
+                    conversations={conversations}
+                    setConversations={setConversations}
                     activeChat={activeChat}
                     setActiveChat={setActiveChat}
-                    createNewChat={createNewChat}
                 ></Sidebar>
                 <ChatPanel
-                    chatHeader={messageHistory.find((chat) => chat.id === activeChat)?.header || ''}
-                    chatMessages={messageHistory.find((chat) => chat.id === activeChat)?.messages || []}
+                    chatHeader={conversations.find((conversation) => conversation.id === activeChat)?.header || ''}
+                    chatMessages={messages}
                     sendMessage={sendMessage}
                 ></ChatPanel>
             </main>

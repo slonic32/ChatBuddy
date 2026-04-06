@@ -1,58 +1,23 @@
-const messagesDataBase = [
-    {
-        id: 1,
-        header: 'Chat about JavaScript',
-        messages: [
-            { id: 1, role: 'assistant', content: 'Hi! How can I help you?' },
-            { id: 2, role: 'user', content: 'What is a closure?' },
-            {
-                id: 3,
-                role: 'assistant',
-                content:
-                    "A closure is a function that has access to its own scope, the outer function's scope, and the global scope.",
-            },
-        ],
-    },
-    {
-        id: 2,
-        header: 'Help with CSS',
-        messages: [
-            { id: 1, role: 'assistant', content: 'Hi! How can I help you?' },
-            { id: 2, role: 'user', content: 'What is CSS?' },
-            {
-                id: 3,
-                role: 'assistant',
-                content: 'CSS - Cascading Style Sheets.',
-            },
-        ],
-    },
-];
+import { messagesDb } from './mockDb';
 
-export async function getMessageHistory() {
-    return structuredClone(messagesDataBase);
+export async function getMessagesByConversation(conversationId) {
+    const messages = messagesDb.filter((message) => message.conversationId === conversationId);
+
+    return structuredClone(messages);
 }
 
-export async function postNewChat(newChatHeader) {
-    const newChat = {
-        id: messagesDataBase.length + 1,
-        header: newChatHeader,
-        messages: [{ id: 1, role: 'assistant', content: 'Hi! How can I help you?' }],
-    };
-    messagesDataBase.push(newChat);
-    return structuredClone(newChat);
-}
-
-export async function postNewMessage(role, content, chatId) {
-    const chat = messagesDataBase.find((chat) => chat.id === chatId);
-    if (!chat) {
-        console.log('Chat not found!');
-        return [];
-    }
+export async function postNewMessage(conversationId, role, content) {
+    const ids = [...messagesDb.map((message) => message.id)];
     const newMessage = {
-        id: chat.messages.length + 1,
-        role: role,
-        content: content,
+        id: Math.max(0, ...ids) + 1,
+        conversationId,
+        role,
+        content,
     };
-    chat.messages.push(newMessage);
-    return structuredClone(chat.messages);
+
+    messagesDb.push(newMessage);
+
+    const conversationMessages = messagesDb.filter((message) => message.conversationId === conversationId);
+
+    return structuredClone(conversationMessages);
 }
