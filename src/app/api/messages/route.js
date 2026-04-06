@@ -22,7 +22,7 @@ async function postNewMessage(conversationId, role, content) {
     return structuredClone(conversationMessages);
 }
 
-export async function GET(request: Request) {
+export async function GET(request) {
     const url = new URL(request.url);
     const conversationIdString = url.searchParams.get('conversationId') ?? '0';
     const conversationId = Number.parseInt(conversationIdString);
@@ -30,7 +30,7 @@ export async function GET(request: Request) {
     return Response.json(data);
 }
 
-export async function POST(request: Request) {
+export async function POST(request) {
     const body = await request.json();
     const conversationMessages = await postNewMessage(body.conversationId, body.role, body.content);
     return Response.json(conversationMessages);

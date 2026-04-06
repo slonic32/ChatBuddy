@@ -1,8 +1,8 @@
 import './globals.css';
+import Footer from '../components/Footer/Footer';
 
 // every page on the site gets this wrapper
-export default function RootLayout({ children }: {}) {
-    children: React.ReactNode;
+export default function RootLayout({ children }: { children: React.ReactNode }) {
     return (
         <html lang="en">
             <body>
@@ -10,7 +10,6 @@ export default function RootLayout({ children }: {}) {
                     {children}
 
                     <Footer></Footer>
-                    {isLoading && <Loader />}
                 </div>
             </body>
         </html>

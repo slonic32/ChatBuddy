@@ -22,7 +22,7 @@ export async function GET() {
     return Response.json(data);
 }
 
-export async function POST(request: Request) {
+export async function POST(request) {
     const body = await request.json();
     const { newConversations, newChatId } = await postNewConversation(body.newConversationHeader);
     return Response.json({ newConversations, newChatId });
