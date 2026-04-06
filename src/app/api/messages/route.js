@@ -1,4 +1,5 @@
 import { messagesDb } from '../mockDb';
+import { sendQuestion } from '../openrouter';
 
 async function getMessagesByConversation(conversationId) {
     const messages = messagesDb.filter((message) => message.conversationId === conversationId);
@@ -17,7 +18,23 @@ async function postNewMessage(conversationId, role, content) {
 
     messagesDb.push(newMessage);
 
-    const conversationMessages = messagesDb.filter((message) => message.conversationId === conversationId);
+    let conversationMessages = messagesDb.filter((message) => message.conversationId === conversationId);
+
+    if (role === 'user') {
+        const answer = await sendQuestion(
+            conversationMessages.map((message) => ({ role: message.role, content: message.content })),
+        );
+
+        const assistantMessage = {
+            id: Math.max(0, ...messagesDb.map((message) => message.id)) + 1,
+            conversationId,
+            role: 'assistant',
+            content: answer,
+        };
+
+        messagesDb.push(assistantMessage);
+        conversationMessages = messagesDb.filter((message) => message.conversationId === conversationId);
+    }
 
     return structuredClone(conversationMessages);
 }

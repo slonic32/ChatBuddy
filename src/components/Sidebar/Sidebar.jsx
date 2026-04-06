@@ -1,4 +1,7 @@
-import { useEffect } from 'react';
+'use client';
+
+import { useEffect, useState } from 'react';
+import { useParams, useRouter } from 'next/navigation';
 import ChatList from '../ChatList/ChatList';
 import NewChatButton from '../NewChatButton/NewChatButton';
 import { getConversations, postNewConversation } from '../../api/conversations';
@@ -6,9 +9,11 @@ import { postNewMessage } from '../../api/messages';
 import Loader from '../Loader/Loader';
 
 export default function Sidebar() {
+    const router = useRouter();
+    const params = useParams();
     const [conversations, setConversations] = useState([]);
     const [isLoading, setIsLoading] = useState(false);
-    const [activeChat, setActiveChat] = useState(null);
+    const activeChat = Number(params?.id);
 
     useEffect(() => {
         async function fetchConversations() {
@@ -17,7 +22,6 @@ export default function Sidebar() {
 
                 const fetchedConversations = await getConversations();
                 setConversations(fetchedConversations);
-                setActiveChat((current) => current ?? fetchedConversations[0]?.id ?? null);
             } catch (error) {
                 console.error('Failed to get conversations:', error);
             } finally {
@@ -26,7 +30,7 @@ export default function Sidebar() {
         }
 
         fetchConversations();
-    }, [setConversations, setActiveChat]);
+    }, []);
 
     async function createNewChat(newChatHeader) {
         try {
@@ -34,8 +38,7 @@ export default function Sidebar() {
             await postNewMessage(newChatId, 'assistant', 'Hi! How can I help you?');
 
             setConversations(newConversations);
-
-            setActiveChat(newChatId);
+            router.push(`/chat/${newChatId}`);
         } catch (error) {
             console.error('Failed to create new chat:', error);
         } finally {
@@ -49,7 +52,7 @@ export default function Sidebar() {
 
             <h2 className="mt-4 text-sm font-semibold text-slate-300">Conversations</h2>
 
-            <ChatList chatsList={conversations} activeChat={activeChat} setActiveChat={setActiveChat}></ChatList>
+            <ChatList chatsList={conversations} activeChat={activeChat}></ChatList>
             {isLoading && <Loader />}
         </aside>
     );

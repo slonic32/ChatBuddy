@@ -1,3 +1,5 @@
+'use client';
+
 export default function ChatForm({ sendMessage }) {
     const handleSubmit = (evt) => {
         evt.preventDefault();

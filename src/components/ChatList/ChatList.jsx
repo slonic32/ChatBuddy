@@ -1,6 +1,6 @@
 import ChatListItem from '../ChatListItem/ChatListItem';
 
-export default function ChatList({ chatsList, activeChat, setActiveChat }) {
+export default function ChatList({ chatsList, activeChat }) {
     return (
         <ul className="mt-3 space-y-2">
             {chatsList.map((chat) => (
@@ -9,7 +9,6 @@ export default function ChatList({ chatsList, activeChat, setActiveChat }) {
                     header={chat.header}
                     isActive={activeChat === chat.id}
                     id={chat.id}
-                    setActiveChat={setActiveChat}
                 ></ChatListItem>
             ))}
         </ul>

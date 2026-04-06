@@ -1,18 +1,15 @@
-import { conversationsDb } from './mockDb';
-
 export async function getConversations() {
-    return structuredClone(conversationsDb);
+    const response = await fetch('/api/conversations');
+
+    return response.json();
 }
 
 export async function postNewConversation(newConversationHeader) {
-    const ids = [...conversationsDb.map((conversation) => conversation.id)];
-    const newConversation = {
-        id: Math.max(0, ...ids) + 1,
-        header: newConversationHeader,
-    };
+    const response = await fetch('/api/conversations', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ newConversationHeader }),
+    });
 
-    conversationsDb.push(newConversation);
-    const newChatId = newConversation.id;
-
-    return { newConversations: structuredClone(conversationsDb), newChatId: newChatId };
+    return response.json();
 }
