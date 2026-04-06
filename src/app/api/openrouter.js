@@ -1,6 +1,6 @@
-const API_KEY = import.meta.env.VITE_OPENROUTER_API_KEY;
-const MODEL = import.meta.env.VITE_OPENROUTER_MODEL;
-const URL = import.meta.env.VITE_OPENROUTER_URL;
+const API_KEY = process.env.OPENROUTER_API_KEY;
+const MODEL = process.env.OPENROUTER_MODEL;
+const URL = process.env.OPENROUTER_URL;
 
 export async function sendQuestion(messageHistory) {
     try {
