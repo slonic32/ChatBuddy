@@ -3,7 +3,7 @@
 import { useParams, useRouter } from 'next/navigation';
 import ChatList from '../ChatList/ChatList';
 import NewChatButton from '../NewChatButton/NewChatButton';
-import { deleteConversation, getConversations, postNewConversation } from '../../app/hooks/conversations';
+import { deleteConversation, postNewConversation } from '../../app/hooks/conversations';
 import { postNewMessage } from '../../app/hooks/messages';
 import Loader from '../Loader/Loader';
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
@@ -15,7 +15,7 @@ export default function SidebarClient({ conversations }) {
 
     const { data: chatsList = [] } = useQuery({
         queryKey: ['conversations'],
-        queryFn: getConversations,
+        enabled: false,
         initialData: conversations,
     });
 

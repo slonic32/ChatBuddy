@@ -24,7 +24,7 @@ export async function postMessage(conversationId, role, content) {
             oldConversationMessages.map((message) => ({ role: message.role, content: message.content })),
         );
 
-        await createMessage(conversationId, (role = 'assistant'), (content = answer));
+        await createMessage(conversationId, 'assistant', answer);
     }
 
     const conversationMessages = await getMessages(conversationId);
