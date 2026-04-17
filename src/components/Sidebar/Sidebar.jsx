@@ -12,6 +12,8 @@ export default function Sidebar() {
     const router = useRouter();
     const params = useParams();
 
+    const queryClient = useQueryClient();
+
     const activeChat = Number(params?.id);
 
     const {

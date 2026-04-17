@@ -1,6 +1,5 @@
 'use client';
 
-import { useEffect, useState } from 'react';
 import { useParams } from 'next/navigation';
 import ChatForm from '../../../components/ChatForm/ChatForm';
 
@@ -8,47 +7,46 @@ import ChatMessageList from '../../../components/ChatMessagesList/ChatMessageLis
 import Loader from '../../../components/Loader/Loader';
 import { getMessagesByConversation, postNewMessage } from '../../../api/messages';
 
+import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
+
 export default function ChatPage() {
     const params = useParams();
     const activeChat = Number(params?.id);
-    const [isLoading, setIsLoading] = useState(false);
-    const [messages, setMessages] = useState([]);
 
-    useEffect(() => {
-        async function fetchMessages() {
-            if (!activeChat) {
-                setMessages([]);
-                return;
-            }
+    const queryClient = useQueryClient();
 
-            try {
-                const chatMessages = await getMessagesByConversation(activeChat);
-                setMessages(chatMessages ?? []);
-            } catch (error) {
-                console.error('Failed to get messages:', error);
-            }
-        }
+    const {
+        data: messages = [],
+        isPending: isMessagesLoading,
+        isError,
+        error,
+    } = useQuery({
+        queryKey: ['messages', activeChat],
+        queryFn: () => getMessagesByConversation(activeChat),
+        enabled: !!activeChat,
+    });
 
-        fetchMessages();
-    }, [activeChat]);
+    const sendMessageMutation = useMutation({
+        mutationFn: async (messageContent) => {
+            return await postNewMessage(activeChat, 'user', messageContent);
+        },
+        onSuccess: (updatedMessages) => {
+            queryClient.setQueryData(['messages', activeChat], updatedMessages);
+        },
+        onError: (error) => {
+            console.error('Failed to send message:', error);
+        },
+    });
 
-    async function sendMessage(messageContent) {
-        if (!activeChat) {
-            return;
-        }
+    function sendMessage(messageContent) {
+        if (!activeChat) return;
+        sendMessageMutation.mutate(messageContent);
+    }
 
-        setMessages((prevMessages) => [
-            ...prevMessages,
-            { id: Date.now(), conversationId: activeChat, role: 'user', content: messageContent },
-        ]);
+    const isLoading = isMessagesLoading || sendMessageMutation.isPending;
 
-        setIsLoading(true);
-        try {
-            const updatedMessages = await postNewMessage(activeChat, 'user', messageContent);
-            setMessages(updatedMessages);
-        } finally {
-            setIsLoading(false);
-        }
+    if (isError) {
+        console.error('Failed to get messages:', error);
     }
 
     return (
