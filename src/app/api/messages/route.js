@@ -1,4 +1,3 @@
-import { messagesDb } from '../mockDb';
 import { sendQuestion } from '../openrouter';
 import { prisma } from '../db';
 
@@ -20,20 +19,23 @@ async function postNewMessage(conversationId, role, content) {
         await prisma.message.create({
             data: { role: 'assistant', content: answer, conversationId: conversationId },
         });
-
-        const conversationMessages = await prisma.message.findMany({
-            where: { conversationId: conversationId },
-            orderBy: { createdAt: 'asc' },
-        });
     }
+
+    const conversationMessages = await prisma.message.findMany({
+        where: { conversationId: conversationId },
+        orderBy: { createdAt: 'asc' },
+    });
 
     return conversationMessages;
 }
 
 export async function GET(request) {
     const url = new URL(request.url);
-    const conversationIdString = url.searchParams.get('conversationId') ?? '0';
-    const conversationId = Number.parseInt(conversationIdString);
+    const conversationId = url.searchParams.get('conversationId');
+
+    if (!conversationId) {
+        return Response.json([]);
+    }
 
     const data = await prisma.message.findMany({
         where: { conversationId: conversationId },

@@ -3,7 +3,7 @@
 import { useParams, useRouter } from 'next/navigation';
 import ChatList from '../ChatList/ChatList';
 import NewChatButton from '../NewChatButton/NewChatButton';
-import { getConversations, postNewConversation } from '../../api/conversations';
+import { deleteConversation, getConversations, postNewConversation } from '../../api/conversations';
 import { postNewMessage } from '../../api/messages';
 import Loader from '../Loader/Loader';
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
@@ -14,7 +14,7 @@ export default function Sidebar() {
 
     const queryClient = useQueryClient();
 
-    const activeChat = Number(params?.id);
+    const activeChat = typeof params?.id === 'string' ? params.id : '';
 
     const {
         data: conversations = [],
@@ -43,11 +43,30 @@ export default function Sidebar() {
         },
     });
 
+    const deleteChatMutation = useMutation({
+        mutationFn: async (conversationId) => deleteConversation(conversationId),
+        onSuccess: ({ deletedConversationId, nextConversationId }) => {
+            queryClient.invalidateQueries({ queryKey: ['conversations'] });
+            queryClient.invalidateQueries({ queryKey: ['messages'] });
+
+            if (activeChat === deletedConversationId) {
+                router.push(nextConversationId ? `/chat/${nextConversationId}` : '/');
+            }
+        },
+        onError: (error) => {
+            console.error('Failed to delete chat:', error);
+        },
+    });
+
     function createNewChat(newChatHeader) {
         createChatMutation.mutate(newChatHeader);
     }
 
-    const isLoading = isConversationsLoading || createChatMutation.isPending;
+    function deleteChat(conversationId) {
+        deleteChatMutation.mutate(conversationId);
+    }
+
+    const isLoading = isConversationsLoading || createChatMutation.isPending || deleteChatMutation.isPending;
 
     if (isError) {
         console.error('Failed to get conversations:', error);
@@ -59,7 +78,7 @@ export default function Sidebar() {
 
             <h2 className="mt-4 text-sm font-semibold text-slate-300">Conversations</h2>
 
-            <ChatList chatsList={conversations} activeChat={activeChat}></ChatList>
+            <ChatList chatsList={conversations} activeChat={activeChat} onDeleteConversation={deleteChat}></ChatList>
             {isLoading && <Loader />}
         </aside>
     );

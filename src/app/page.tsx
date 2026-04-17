@@ -1,5 +1,3 @@
-import { redirect } from 'next/navigation';
-
-export default function Home() {
-    redirect('/chat/1');
+export default async function Home() {
+    <div>Hello!</div>;
 }

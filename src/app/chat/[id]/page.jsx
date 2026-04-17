@@ -11,7 +11,7 @@ import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
 
 export default function ChatPage() {
     const params = useParams();
-    const activeChat = Number(params?.id);
+    const activeChat = typeof params?.id === 'string' ? params.id : '';
 
     const queryClient = useQueryClient();
 
@@ -23,7 +23,7 @@ export default function ChatPage() {
     } = useQuery({
         queryKey: ['messages', activeChat],
         queryFn: () => getMessagesByConversation(activeChat),
-        enabled: !!activeChat,
+        enabled: Boolean(activeChat),
     });
 
     const sendMessageMutation = useMutation({
@@ -47,7 +47,7 @@ export default function ChatPage() {
     }
 
     return (
-        <div className="min-w-[800px] flex min-h-0 flex-1 flex-col rounded-xl bg-slate-900/40 ring-1 ring-white/10">
+        <div className="w-full min-w-0 flex min-h-0 flex-1 flex-col rounded-xl bg-slate-900/40 ring-1 ring-white/10">
             <div className="flex min-h-0 flex-1 flex-col">
                 <ChatMessageList chatMessages={messages}></ChatMessageList>
                 <ChatForm sendMessage={sendMessage}></ChatForm>
