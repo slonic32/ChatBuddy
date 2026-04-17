@@ -3,8 +3,8 @@
 import { useParams, useRouter } from 'next/navigation';
 import ChatList from '../ChatList/ChatList';
 import NewChatButton from '../NewChatButton/NewChatButton';
-import { deleteConversation, getConversations, postNewConversation } from '../../api/conversations';
-import { postNewMessage } from '../../api/messages';
+import { deleteConversation, getConversations, postNewConversation } from '../../app/hooks/conversations';
+import { postNewMessage } from '../../app/hooks/messages';
 import Loader from '../Loader/Loader';
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
 

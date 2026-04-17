@@ -5,7 +5,7 @@ import ChatForm from '../../../components/ChatForm/ChatForm';
 
 import ChatMessageList from '../../../components/ChatMessagesList/ChatMessageList';
 import Loader from '../../../components/Loader/Loader';
-import { getMessagesByConversation, postNewMessage } from '../../../api/messages';
+import { getMessagesByConversation, postNewMessage } from '../../hooks/messages';
 
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
 

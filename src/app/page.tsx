@@ -3,8 +3,8 @@
 import { useRouter } from 'next/navigation';
 import { useMutation, useQueryClient } from '@tanstack/react-query';
 import NewChatButton from '../components/NewChatButton/NewChatButton';
-import { postNewConversation } from '../api/conversations';
-import { postNewMessage } from '../api/messages';
+import { postNewConversation } from './hooks/conversations';
+import { postNewMessage } from './hooks/messages';
 
 export default function Home() {
     const router = useRouter();
