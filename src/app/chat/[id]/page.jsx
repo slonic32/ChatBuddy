@@ -23,7 +23,6 @@ export default function ChatPage() {
     } = useQuery({
         queryKey: ['messages', activeChat],
         queryFn: () => getMessagesByConversation(activeChat),
-        enabled: !!activeChat,
     });
 
     const sendMessageMutation = useMutation({
