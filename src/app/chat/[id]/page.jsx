@@ -1,6 +1,6 @@
 'use client';
 
-import { useParams } from 'next/navigation';
+import { useParams, useRouter } from 'next/navigation';
 import ChatForm from '../../../components/ChatForm/ChatForm';
 
 import ChatMessageList from '../../../components/ChatMessagesList/ChatMessageList';
@@ -11,6 +11,7 @@ import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
 
 export default function ChatPage() {
     const params = useParams();
+    const router = useRouter();
     const activeChat = typeof params?.id === 'string' ? params.id : '';
 
     const queryClient = useQueryClient();
@@ -32,6 +33,7 @@ export default function ChatPage() {
         },
         onSuccess: () => {
             queryClient.invalidateQueries({ queryKey: ['messages', activeChat] });
+            router.refresh();
         },
     });
 
