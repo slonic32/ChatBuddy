@@ -1,49 +1,54 @@
 'use client';
 
-import { useEffect, useState } from 'react';
 import { useParams, useRouter } from 'next/navigation';
 import ChatList from '../ChatList/ChatList';
 import NewChatButton from '../NewChatButton/NewChatButton';
 import { getConversations, postNewConversation } from '../../api/conversations';
 import { postNewMessage } from '../../api/messages';
 import Loader from '../Loader/Loader';
+import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
 
 export default function Sidebar() {
     const router = useRouter();
     const params = useParams();
-    const [conversations, setConversations] = useState([]);
-    const [isLoading, setIsLoading] = useState(false);
+
     const activeChat = Number(params?.id);
 
-    useEffect(() => {
-        async function fetchConversations() {
-            try {
-                setIsLoading(true);
+    const {
+        data: conversations = [],
+        isPending: isConversationsLoading,
+        isError,
+        error,
+    } = useQuery({
+        queryKey: ['conversations'],
+        queryFn: getConversations,
+    });
 
-                const fetchedConversations = await getConversations();
-                setConversations(fetchedConversations);
-            } catch (error) {
-                console.error('Failed to get conversations:', error);
-            } finally {
-                setIsLoading(false);
-            }
-        }
-
-        fetchConversations();
-    }, []);
-
-    async function createNewChat(newChatHeader) {
-        try {
+    const createChatMutation = useMutation({
+        mutationFn: async (newChatHeader) => {
             const { newConversations, newChatId } = await postNewConversation(newChatHeader);
+
             await postNewMessage(newChatId, 'assistant', 'Hi! How can I help you?');
 
-            setConversations(newConversations);
+            return { newConversations, newChatId };
+        },
+        onSuccess: ({ newConversations, newChatId }) => {
+            queryClient.setQueryData(['conversations'], newConversations);
             router.push(`/chat/${newChatId}`);
-        } catch (error) {
+        },
+        onError: (error) => {
             console.error('Failed to create new chat:', error);
-        } finally {
-            setIsLoading(false);
-        }
+        },
+    });
+
+    function createNewChat(newChatHeader) {
+        createChatMutation.mutate(newChatHeader);
+    }
+
+    const isLoading = isConversationsLoading || createChatMutation.isPending;
+
+    if (isError) {
+        console.error('Failed to get conversations:', error);
     }
 
     return (
