@@ -9,7 +9,7 @@ export async function getMessages(conversationId) {
     return data;
 }
 
-async function createMessage(conversationId, role, content) {
+export async function createMessage(conversationId, role, content) {
     await prisma.message.create({
         data: { role: role, content: content, conversationId: conversationId },
     });

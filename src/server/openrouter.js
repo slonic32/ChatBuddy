@@ -1,6 +1,18 @@
+import { createOpenAICompatible } from '@ai-sdk/openai-compatible';
+
 const API_KEY = process.env.OPENROUTER_API_KEY;
 const MODEL = process.env.OPENROUTER_MODEL;
 const URL = process.env.OPENROUTER_URL;
+
+const OPENROUTER_BASE_URL = URL?.replace(/\/chat\/completions\/?$/, '') ?? 'https://openrouter.ai/api/v1';
+
+export const openrouter = createOpenAICompatible({
+    name: 'openrouter',
+    baseURL: OPENROUTER_BASE_URL,
+    apiKey: API_KEY,
+});
+
+export const OPENROUTER_MODEL = MODEL;
 
 export async function sendQuestion(messageHistory) {
     try {

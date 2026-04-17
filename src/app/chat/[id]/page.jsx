@@ -1,60 +1,15 @@
-'use client';
+import ChatPanel from '../../../components/ChatPanel/ChatPanel';
+import { getMessages } from '../../../server/messages';
 
-import { useParams, useRouter } from 'next/navigation';
-import ChatForm from '../../../components/ChatForm/ChatForm';
+export default async function ChatPage({ params }) {
+    const { id } = await params;
+    const messages = await getMessages(id);
 
-import ChatMessageList from '../../../components/ChatMessagesList/ChatMessageList';
-import Loader from '../../../components/Loader/Loader';
-import { getMessagesByConversation, postNewMessage } from '../../hooks/messages';
+    const initialMessages = messages.map((message) => ({
+        id: message.id,
+        role: message.role,
+        parts: [{ type: 'text', text: message.content }],
+    }));
 
-import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
-
-export default function ChatPage() {
-    const params = useParams();
-    const router = useRouter();
-    const activeChat = typeof params?.id === 'string' ? params.id : '';
-
-    const queryClient = useQueryClient();
-
-    const {
-        data: messages = [],
-        isPending: isMessagesLoading,
-        isError,
-        error,
-    } = useQuery({
-        queryKey: ['messages', activeChat],
-        queryFn: () => getMessagesByConversation(activeChat),
-        enabled: Boolean(activeChat),
-    });
-
-    const sendMessageMutation = useMutation({
-        mutationFn: async (messageContent) => {
-            return await postNewMessage(activeChat, 'user', messageContent);
-        },
-        onSuccess: () => {
-            queryClient.invalidateQueries({ queryKey: ['messages', activeChat] });
-            router.refresh();
-        },
-    });
-
-    function sendMessage(messageContent) {
-        if (!activeChat) return;
-        sendMessageMutation.mutate(messageContent);
-    }
-
-    const isLoading = isMessagesLoading || sendMessageMutation.isPending;
-
-    if (isError) {
-        console.error('Failed to get messages:', error);
-    }
-
-    return (
-        <div className="w-full min-w-0 flex min-h-0 flex-1 flex-col rounded-xl bg-slate-900/40 ring-1 ring-white/10">
-            <div className="flex min-h-0 flex-1 flex-col">
-                <ChatMessageList chatMessages={messages}></ChatMessageList>
-                <ChatForm sendMessage={sendMessage}></ChatForm>
-                {isLoading && <Loader />}
-            </div>
-        </div>
-    );
+    return <ChatPanel conversationId={id} initialMessages={initialMessages}></ChatPanel>;
 }
