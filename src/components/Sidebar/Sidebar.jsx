@@ -34,8 +34,8 @@ export default function Sidebar() {
 
             return { newConversations, newChatId };
         },
-        onSuccess: ({ newConversations, newChatId }) => {
-            queryClient.setQueryData(['conversations'], newConversations);
+        onSuccess: ({ newChatId }) => {
+            queryClient.invalidateQueries({ queryKey: ['conversations'] });
             router.push(`/chat/${newChatId}`);
         },
         onError: (error) => {

@@ -23,17 +23,15 @@ export default function ChatPage() {
     } = useQuery({
         queryKey: ['messages', activeChat],
         queryFn: () => getMessagesByConversation(activeChat),
+        enabled: !!activeChat,
     });
 
     const sendMessageMutation = useMutation({
         mutationFn: async (messageContent) => {
             return await postNewMessage(activeChat, 'user', messageContent);
         },
-        onSuccess: (updatedMessages) => {
-            queryClient.setQueryData(['messages', activeChat], updatedMessages);
-        },
-        onError: (error) => {
-            console.error('Failed to send message:', error);
+        onSuccess: () => {
+            queryClient.invalidateQueries({ queryKey: ['messages', activeChat] });
         },
     });
 
