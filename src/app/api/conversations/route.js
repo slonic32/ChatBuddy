@@ -31,10 +31,8 @@ export async function DELETE(request) {
     }
 
     try {
-        await prisma.$transaction([
-            prisma.message.deleteMany({ where: { conversationId } }),
-            prisma.conversation.delete({ where: { id: conversationId } }),
-        ]);
+        await prisma.message.deleteMany({ where: { conversationId } });
+        await prisma.conversation.delete({ where: { id: conversationId } });
     } catch {
         return Response.json({ error: 'Conversation not found' }, { status: 404 });
     }
