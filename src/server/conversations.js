@@ -1,4 +1,4 @@
-import { prisma } from '../db';
+import { prisma } from './db';
 
 export async function getConversations() {
     const data = await prisma.conversation.findMany({
@@ -27,8 +27,8 @@ export async function deleteConversation(conversationId) {
         orderBy: { createdAt: 'desc' },
     });
 
-    return {
+    return Response.json({
         deletedConversationId: conversationId,
         nextConversationId: nextConversation?.id ?? null,
-    };
+    });
 }

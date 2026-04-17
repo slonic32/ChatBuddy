@@ -1,12 +1,12 @@
 import { sendQuestion } from './openrouter';
-import { prisma } from './db.ts';
+import { prisma } from './db';
 
 export async function getMessages(conversationId) {
     const data = await prisma.message.findMany({
         where: { conversationId: conversationId },
         orderBy: { createdAt: 'asc' },
     });
-    return Response.json(data);
+    return data;
 }
 
 async function createMessage(conversationId, role, content) {

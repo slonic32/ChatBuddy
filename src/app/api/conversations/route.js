@@ -1,4 +1,4 @@
-import { getConversations, postNewConversation } from '../../hooks/conversations';
+import { deleteConversation, getConversations, postNewConversation } from '../../../server/conversations';
 
 export async function GET() {
     const data = await getConversations();
@@ -7,11 +7,7 @@ export async function GET() {
 
 export async function POST(request) {
     const body = await request.json();
-    const newConversation = await postNewConversation(body.newConversationHeader);
-
-    const newChatId = newConversation.id;
-
-    const newConversations = await getConversations();
+    const { newConversations, newChatId } = await postNewConversation(body.newConversationHeader);
 
     return Response.json({ newConversations, newChatId });
 }
@@ -26,12 +22,11 @@ export async function DELETE(request) {
 
     try {
         const { deletedConversationId, nextConversationId } = await deleteConversation(conversationId);
+        return Response.json({
+            deletedConversationId,
+            nextConversationId,
+        });
     } catch {
         return Response.json({ error: 'Conversation not found' }, { status: 404 });
     }
-
-    return Response.json({
-        deletedConversationId,
-        nextConversationId,
-    });
 }

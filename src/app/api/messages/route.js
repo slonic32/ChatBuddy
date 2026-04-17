@@ -1,4 +1,4 @@
-import { postNewMessage, getMessages } from '../../../server/messages';
+import { postMessage, getMessages } from '../../../server/messages';
 
 export async function GET(request) {
     const url = new URL(request.url);
@@ -14,6 +14,6 @@ export async function GET(request) {
 
 export async function POST(request) {
     const body = await request.json();
-    const conversationMessages = await postNewMessage(body.conversationId, body.role, body.content);
+    const conversationMessages = await postMessage(body.conversationId, body.role, body.content);
     return Response.json(conversationMessages);
 }
