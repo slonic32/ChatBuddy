@@ -27,8 +27,8 @@ export async function deleteConversation(conversationId) {
         orderBy: { createdAt: 'desc' },
     });
 
-    return Response.json({
+    return {
         deletedConversationId: conversationId,
         nextConversationId: nextConversation?.id ?? null,
-    });
+    };
 }
