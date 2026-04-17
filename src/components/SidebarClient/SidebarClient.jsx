@@ -15,6 +15,7 @@ export default function SidebarClient({ conversations }) {
 
     const { data: chatsList = [] } = useQuery({
         queryKey: ['conversations'],
+        queryFn: async () => queryClient.getQueryData(['conversations']) ?? conversations,
         enabled: false,
         initialData: conversations,
     });
@@ -53,7 +54,7 @@ export default function SidebarClient({ conversations }) {
             queryClient.setQueryData(['conversations'], context?.previous ?? conversations);
             console.error('Failed to create new chat:', error);
         },
-        onSettled: () => queryClient.invalidateQueries({ queryKey: ['conversations'] }),
+        onSettled: () => queryClient.invalidateQueries({ queryKey: ['conversations'], refetchType: 'none' }),
     });
 
     const deleteChatMutation = useMutation({
@@ -78,7 +79,7 @@ export default function SidebarClient({ conversations }) {
             queryClient.setQueryData(['conversations'], context?.previous ?? conversations);
             console.error('Failed to delete chat:', error);
         },
-        onSettled: () => queryClient.invalidateQueries({ queryKey: ['conversations'] }),
+        onSettled: () => queryClient.invalidateQueries({ queryKey: ['conversations'], refetchType: 'none' }),
     });
 
     function createNewChat(newChatHeader) {
