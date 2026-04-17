@@ -1,49 +1,44 @@
 import { messagesDb } from '../mockDb';
 import { sendQuestion } from '../openrouter';
-
-async function getMessagesByConversation(conversationId) {
-    const messages = messagesDb.filter((message) => message.conversationId === conversationId);
-
-    return structuredClone(messages);
-}
+import { prisma } from '../db';
 
 async function postNewMessage(conversationId, role, content) {
-    const ids = [...messagesDb.map((message) => message.id)];
-    const newMessage = {
-        id: Math.max(0, ...ids) + 1,
-        conversationId,
-        role,
-        content,
-    };
+    await prisma.message.create({
+        data: { role: role, content: content, conversationId: conversationId },
+    });
 
-    messagesDb.push(newMessage);
-
-    let conversationMessages = messagesDb.filter((message) => message.conversationId === conversationId);
+    const oldConversationMessages = await prisma.message.findMany({
+        where: { conversationId: conversationId },
+        orderBy: { createdAt: 'asc' },
+    });
 
     if (role === 'user') {
         const answer = await sendQuestion(
-            conversationMessages.map((message) => ({ role: message.role, content: message.content })),
+            oldConversationMessages.map((message) => ({ role: message.role, content: message.content })),
         );
 
-        const assistantMessage = {
-            id: Math.max(0, ...messagesDb.map((message) => message.id)) + 1,
-            conversationId,
-            role: 'assistant',
-            content: answer,
-        };
+        await prisma.message.create({
+            data: { role: 'assistant', content: answer, conversationId: conversationId },
+        });
 
-        messagesDb.push(assistantMessage);
-        conversationMessages = messagesDb.filter((message) => message.conversationId === conversationId);
+        const conversationMessages = await prisma.message.findMany({
+            where: { conversationId: conversationId },
+            orderBy: { createdAt: 'asc' },
+        });
     }
 
-    return structuredClone(conversationMessages);
+    return conversationMessages;
 }
 
 export async function GET(request) {
     const url = new URL(request.url);
     const conversationIdString = url.searchParams.get('conversationId') ?? '0';
     const conversationId = Number.parseInt(conversationIdString);
-    const data = await getMessagesByConversation(conversationId);
+
+    const data = await prisma.message.findMany({
+        where: { conversationId: conversationId },
+        orderBy: { createdAt: 'asc' },
+    });
     return Response.json(data);
 }
 
