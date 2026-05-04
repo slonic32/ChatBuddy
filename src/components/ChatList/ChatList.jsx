@@ -1,6 +1,6 @@
 import ChatListItem from '../ChatListItem/ChatListItem';
 
-export default function ChatList({ chatsList, activeChat }) {
+export default function ChatList({ chatsList, activeChat, onDeleteConversation }) {
     return (
         <ul className="mt-3 space-y-2">
             {chatsList.map((chat) => (
@@ -9,6 +9,7 @@ export default function ChatList({ chatsList, activeChat }) {
                     header={chat.header}
                     isActive={activeChat === chat.id}
                     id={chat.id}
+                    onDelete={onDeleteConversation}
                 ></ChatListItem>
             ))}
         </ul>

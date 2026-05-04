@@ -13,3 +13,11 @@ export async function postNewConversation(newConversationHeader) {
 
     return response.json();
 }
+
+export async function deleteConversation(conversationId) {
+    const response = await fetch(`/api/conversations?conversationId=${conversationId}`, {
+        method: 'DELETE',
+    });
+
+    return response.json();
+}

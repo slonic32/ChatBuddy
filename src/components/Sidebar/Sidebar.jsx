@@ -1,49 +1,75 @@
 'use client';
 
-import { useEffect, useState } from 'react';
 import { useParams, useRouter } from 'next/navigation';
 import ChatList from '../ChatList/ChatList';
 import NewChatButton from '../NewChatButton/NewChatButton';
-import { getConversations, postNewConversation } from '../../api/conversations';
+import { deleteConversation, getConversations, postNewConversation } from '../../api/conversations';
 import { postNewMessage } from '../../api/messages';
 import Loader from '../Loader/Loader';
+import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
 
 export default function Sidebar() {
     const router = useRouter();
     const params = useParams();
-    const [conversations, setConversations] = useState([]);
-    const [isLoading, setIsLoading] = useState(false);
-    const activeChat = Number(params?.id);
 
-    useEffect(() => {
-        async function fetchConversations() {
-            try {
-                setIsLoading(true);
+    const queryClient = useQueryClient();
 
-                const fetchedConversations = await getConversations();
-                setConversations(fetchedConversations);
-            } catch (error) {
-                console.error('Failed to get conversations:', error);
-            } finally {
-                setIsLoading(false);
-            }
-        }
+    const activeChat = typeof params?.id === 'string' ? params.id : '';
 
-        fetchConversations();
-    }, []);
+    const {
+        data: conversations = [],
+        isPending: isConversationsLoading,
+        isError,
+        error,
+    } = useQuery({
+        queryKey: ['conversations'],
+        queryFn: getConversations,
+    });
 
-    async function createNewChat(newChatHeader) {
-        try {
+    const createChatMutation = useMutation({
+        mutationFn: async (newChatHeader) => {
             const { newConversations, newChatId } = await postNewConversation(newChatHeader);
+
             await postNewMessage(newChatId, 'assistant', 'Hi! How can I help you?');
 
-            setConversations(newConversations);
+            return { newConversations, newChatId };
+        },
+        onSuccess: ({ newChatId }) => {
+            queryClient.invalidateQueries({ queryKey: ['conversations'] });
             router.push(`/chat/${newChatId}`);
-        } catch (error) {
+        },
+        onError: (error) => {
             console.error('Failed to create new chat:', error);
-        } finally {
-            setIsLoading(false);
-        }
+        },
+    });
+
+    const deleteChatMutation = useMutation({
+        mutationFn: async (conversationId) => deleteConversation(conversationId),
+        onSuccess: ({ deletedConversationId, nextConversationId }) => {
+            queryClient.invalidateQueries({ queryKey: ['conversations'] });
+            queryClient.invalidateQueries({ queryKey: ['messages'] });
+
+            if (activeChat === deletedConversationId) {
+                router.push(nextConversationId ? `/chat/${nextConversationId}` : '/');
+            }
+        },
+        onError: (error) => {
+            console.error('Failed to delete chat:', error);
+        },
+    });
+
+    function createNewChat(newChatHeader) {
+        createChatMutation.mutate(newChatHeader);
+    }
+
+    function deleteChat(conversationId) {
+        deleteChatMutation.mutate(conversationId);
+    }
+
+    const isLoading = isConversationsLoading || createChatMutation.isPending || deleteChatMutation.isPending;
+
+    if (isError) {
+        console.error('Failed to get conversations:', error);
     }
 
     return (
@@ -52,7 +78,7 @@ export default function Sidebar() {
 
             <h2 className="mt-4 text-sm font-semibold text-slate-300">Conversations</h2>
 
-            <ChatList chatsList={conversations} activeChat={activeChat}></ChatList>
+            <ChatList chatsList={conversations} activeChat={activeChat} onDeleteConversation={deleteChat}></ChatList>
             {isLoading && <Loader />}
         </aside>
     );
