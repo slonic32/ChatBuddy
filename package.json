@@ -1,38 +1,45 @@
 {
   "name": "chatbuddy",
   "private": true,
-  "version": "0.0.0",
+  "version": "1.0.0",
   "type": "module",
+  "description": "ChatBuddy AI Chat Bot",
+  "main": "index.html",
+  "devDependencies": {
+    "@eslint/css": "^0.14.1",
+    "@eslint/js": "^10.0.1",
+    "@eslint/json": "^1.0.1",
+    "@eslint/markdown": "^7.5.1",
+    "eslint": "^10.0.2",
+    "eslint-config-prettier": "^10.1.8",
+    "globals": "^17.3.0",
+    "prettier": "^3.8.1",
+    "vite": "^7.3.1"
+  },
   "scripts": {
     "dev": "vite",
     "build": "vite build",
-    "lint": "eslint .",
     "preview": "vite preview",
+    "lint": "eslint .",
     "lint:fix": "eslint . --fix",
     "format": "prettier --write .",
     "format:check": "prettier --check ."
   },
-  "dependencies": {
-    "@tailwindcss/vite": "^4.2.2",
-    "react": "^19.2.4",
-    "react-dom": "^19.2.4",
-    "react-spinners": "^0.17.0",
-    "tailwindcss": "^4.2.2"
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/slonic32/ChatBuddy.git"
   },
-  "devDependencies": {
-    "@eslint/css": "^0.14.1",
-    "@eslint/js": "^9.39.4",
-    "@eslint/json": "^1.0.1",
-    "@eslint/markdown": "^7.5.1",
-    "@types/react": "^19.2.14",
-    "@types/react-dom": "^19.2.3",
-    "@vitejs/plugin-react": "^6.0.1",
-    "eslint": "^9.39.4",
-    "eslint-config-prettier": "^10.1.8",
-    "eslint-plugin-react-hooks": "^7.0.1",
-    "eslint-plugin-react-refresh": "^0.5.2",
-    "globals": "^17.4.0",
-    "prettier": "^3.8.1",
-    "vite": "^8.0.1"
+  "keywords": [],
+  "author": "Artem Hordiyevskyy <hordiyevskyy@gmail.com> (https://hordiyevskyy.com/)",
+  "license": "GPL",
+  "bugs": {
+    "url": "https://github.com/slonic32/ChatBuddy/issues"
+  },
+  "homepage": "https://github.com/slonic32/ChatBuddy#readme",
+  "dependencies": {
+    "@tailwindcss/postcss": "^4.2.1",
+    "@tailwindcss/vite": "^4.2.1",
+    "postcss": "^8.5.8",
+    "tailwindcss": "^4.2.1"
   }
 }
