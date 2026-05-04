@@ -1,8 +1,10 @@
 {
   "name": "chatbuddy",
+  "private": true,
   "version": "1.0.0",
+  "type": "module",
   "description": "ChatBuddy AI Chat Bot",
-  "main": "src/index.js",
+  "main": "index.html",
   "devDependencies": {
     "@eslint/css": "^0.14.1",
     "@eslint/js": "^10.0.1",
@@ -11,9 +13,13 @@
     "eslint": "^10.0.2",
     "eslint-config-prettier": "^10.1.8",
     "globals": "^17.3.0",
-    "prettier": "^3.8.1"
+    "prettier": "^3.8.1",
+    "vite": "^7.3.1"
   },
   "scripts": {
+    "dev": "vite",
+    "build": "vite build",
+    "preview": "vite preview",
     "lint": "eslint .",
     "lint:fix": "eslint . --fix",
     "format": "prettier --write .",
@@ -26,9 +32,14 @@
   "keywords": [],
   "author": "Artem Hordiyevskyy <hordiyevskyy@gmail.com> (https://hordiyevskyy.com/)",
   "license": "GPL",
-  "type": "commonjs",
   "bugs": {
     "url": "https://github.com/slonic32/ChatBuddy/issues"
   },
-  "homepage": "https://github.com/slonic32/ChatBuddy#readme"
+  "homepage": "https://github.com/slonic32/ChatBuddy#readme",
+  "dependencies": {
+    "@tailwindcss/postcss": "^4.2.1",
+    "@tailwindcss/vite": "^4.2.1",
+    "postcss": "^8.5.8",
+    "tailwindcss": "^4.2.1"
+  }
 }

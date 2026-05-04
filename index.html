@@ -1,0 +1,84 @@
+<!doctype html>
+<html lang="en">
+    <head>
+        <meta charset="UTF-8" />
+        <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+        <link rel="icon" type="image/x-icon" href="/chatbuddy.ico" />
+
+        <link rel="preconnect" href="https://fonts.googleapis.com" />
+        <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+        <link href="https://fonts.googleapis.com/css2?family=Roboto&display=swap" rel="stylesheet" />
+
+        <link rel="stylesheet" href="/src/styles.css" />
+        <title>AI Chat App</title>
+    </head>
+
+    <body class="min-h-screen bg-slate-950 text-slate-100">
+        <div class="mx-auto flex min-h-screen max-w-5xl flex-col px-4">
+            <main class="flex flex-1 min-h-0 gap-8 py-6 max-h-[85vh]">
+                <aside class="w-64 shrink-0 rounded-xl bg-slate-900/60 p-4 ring-1 ring-white/10 overflow-y-auto">
+                    <button
+                        type="button"
+                        class="w-full rounded-lg bg-rose-600 px-3 py-2 text-sm font-semibold hover:bg-rose-500 active:bg-rose-700"
+                    >
+                        New Chat
+                    </button>
+
+                    <h2 class="mt-4 text-sm font-semibold text-slate-300">Conversations</h2>
+
+                    <ul class="mt-3 space-y-2">
+                        <li>
+                            <a
+                                href="#"
+                                aria-current="page"
+                                class="block rounded-lg bg-slate-800 px-3 py-2 text-sm font-medium ring-1 ring-white/10"
+                            >
+                                Chat about JavaScript
+                            </a>
+                        </li>
+                        <li>
+                            <a href="#" class="block rounded-lg px-3 py-2 text-sm text-slate-200 hover:bg-slate-800/70">
+                                Help with CSS
+                            </a>
+                        </li>
+                    </ul>
+                </aside>
+
+                <div class="flex min-h-0 flex-1 flex-col rounded-xl bg-slate-900/40 ring-1 ring-white/10">
+                    <div class="border-b border-white/10 px-5 py-4">
+                        <h1 class="text-base font-semibold">Chat about JavaScript</h1>
+                    </div>
+
+                    <div class="flex min-h-0 flex-1 flex-col">
+                        <section class="messages flex-1 min-h-0 space-y-4 overflow-y-auto px-5 py-4">
+                            <chat-message role="ai">Hi! How can I help you?</chat-message>
+                            <chat-message role="user">What is a closure?</chat-message>
+                            <chat-message role="ai">A closure is a function that...</chat-message>
+                        </section>
+
+                        <form class="input-area flex items-end gap-3 border-t border-white/10 px-5 py-4">
+                            <textarea
+                                class="min-h-11 max-h-32 flex-1 resize-y rounded-xl bg-slate-800 px-3 py-2 text-sm outline-none placeholder:text-slate-400 focus:ring-2 focus:ring-sky-500/60"
+                                placeholder="Type a message..."
+                                required
+                            ></textarea>
+
+                            <button
+                                type="submit"
+                                class="h-11 rounded-xl bg-sky-600 px-4 text-sm font-semibold hover:bg-sky-500 active:bg-sky-700"
+                            >
+                                Send
+                            </button>
+                        </form>
+                    </div>
+                </div>
+            </main>
+
+            <footer class="mt-auto py-3 text-center text-sm text-white/70">
+                <p>&copy; 2026 ChatBuddy AI Chat App. All rights reserved.</p>
+            </footer>
+        </div>
+
+        <script src="/src/messageAPI.js" type="module"></script>
+    </body>
+</html>
