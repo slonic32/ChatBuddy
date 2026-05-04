@@ -1,0 +1,55 @@
+<!doctype html>
+<html lang="en">
+    <head>
+        <meta charset="UTF-8" />
+        <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+        <link
+            rel="stylesheet"
+            href="https://cdnjs.cloudflare.com/ajax/libs/modern-normalize/3.0.1/modern-normalize.min.css"
+            integrity="sha512-q6WgHqiHlKyOqslT/lgBgodhd03Wp4BEqKeW6nNtlOY4quzyG3VoQKFrieaCeSnuVseNKRGpGeDU3qPmabCANg=="
+            crossorigin="anonymous"
+            referrerpolicy="no-referrer"
+        />
+        <link rel="preconnect" href="https://fonts.googleapis.com" />
+        <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+        <link href="https://fonts.googleapis.com/css2?family=Roboto&display=swap" rel="stylesheet" />
+        <link rel="stylesheet" href="styles.css" />
+        <title>AI Chat App</title>
+    </head>
+    <body>
+        <div class="container app">
+            <aside class="sidebar">
+                <h2>Conversations</h2>
+                <ul class="list">
+                    <li><a class="link" href="#">Chat about JavaScript</a></li>
+                    <li><a class="link" href="#">Help with CSS</a></li>
+                </ul>
+                <button class="aside-button">New Chat</button>
+            </aside>
+            <div class="main-column">
+                <div>
+                    <header>
+                        <h1>Chat about JavaScript</h1>
+                    </header>
+                    <main class="chat">
+                        <section class="messages">
+                            <div class="message user"><p class="bubble">What is a closure?</p></div>
+                            <div class="message assistant">
+                                <p class="bubble">A closure is a function that...</p>
+                            </div>
+                        </section>
+                        <form class="input-area">
+                            <input type="text" placeholder="Type a message..." required />
+                            <button type="submit">Send</button>
+                        </form>
+                    </main>
+                </div>
+
+                <footer>
+                    <p>&copy; 2026 ChatBuddy AI Chat App. All rights reserved.</p>
+                </footer>
+            </div>
+        </div>
+        <script src="messageAPI.js" type="module"></script>
+    </body>
+</html>
