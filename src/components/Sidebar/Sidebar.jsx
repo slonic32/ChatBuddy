@@ -1,31 +1,49 @@
-import { useEffect } from 'react';
+'use client';
+
+import { useEffect, useState } from 'react';
+import { useParams, useRouter } from 'next/navigation';
 import ChatList from '../ChatList/ChatList';
 import NewChatButton from '../NewChatButton/NewChatButton';
 import { getConversations, postNewConversation } from '../../api/conversations';
 import { postNewMessage } from '../../api/messages';
+import Loader from '../Loader/Loader';
 
-export default function Sidebar({ conversations, setConversations, activeChat, setActiveChat }) {
+export default function Sidebar() {
+    const router = useRouter();
+    const params = useParams();
+    const [conversations, setConversations] = useState([]);
+    const [isLoading, setIsLoading] = useState(false);
+    const activeChat = Number(params?.id);
+
     useEffect(() => {
         async function fetchConversations() {
             try {
+                setIsLoading(true);
+
                 const fetchedConversations = await getConversations();
                 setConversations(fetchedConversations);
-                setActiveChat((current) => current ?? fetchedConversations[0]?.id ?? null);
             } catch (error) {
                 console.error('Failed to get conversations:', error);
+            } finally {
+                setIsLoading(false);
             }
         }
 
         fetchConversations();
-    }, [setConversations, setActiveChat]);
+    }, []);
 
     async function createNewChat(newChatHeader) {
-        const { newConversations, newChatId } = await postNewConversation(newChatHeader);
-        await postNewMessage(newChatId, 'assistant', 'Hi! How can I help you?');
+        try {
+            const { newConversations, newChatId } = await postNewConversation(newChatHeader);
+            await postNewMessage(newChatId, 'assistant', 'Hi! How can I help you?');
 
-        setConversations(newConversations);
-
-        setActiveChat(newChatId);
+            setConversations(newConversations);
+            router.push(`/chat/${newChatId}`);
+        } catch (error) {
+            console.error('Failed to create new chat:', error);
+        } finally {
+            setIsLoading(false);
+        }
     }
 
     return (
@@ -34,7 +52,8 @@ export default function Sidebar({ conversations, setConversations, activeChat, s
 
             <h2 className="mt-4 text-sm font-semibold text-slate-300">Conversations</h2>
 
-            <ChatList chatsList={conversations} activeChat={activeChat} setActiveChat={setActiveChat}></ChatList>
+            <ChatList chatsList={conversations} activeChat={activeChat}></ChatList>
+            {isLoading && <Loader />}
         </aside>
     );
 }

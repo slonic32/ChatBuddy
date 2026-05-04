@@ -1,23 +1,15 @@
-import { messagesDb } from './mockDb';
-
 export async function getMessagesByConversation(conversationId) {
-    const messages = messagesDb.filter((message) => message.conversationId === conversationId);
+    const response = await fetch(`/api/messages?conversationId=${conversationId}`);
 
-    return structuredClone(messages);
+    return response.json();
 }
 
 export async function postNewMessage(conversationId, role, content) {
-    const ids = [...messagesDb.map((message) => message.id)];
-    const newMessage = {
-        id: Math.max(0, ...ids) + 1,
-        conversationId,
-        role,
-        content,
-    };
+    const response = await fetch('/api/messages', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ conversationId, role, content }),
+    });
 
-    messagesDb.push(newMessage);
-
-    const conversationMessages = messagesDb.filter((message) => message.conversationId === conversationId);
-
-    return structuredClone(conversationMessages);
+    return response.json();
 }
