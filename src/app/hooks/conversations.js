@@ -15,7 +15,7 @@ export async function postNewConversation(newConversationHeader) {
 }
 
 export async function deleteConversation(conversationId) {
-    const response = await fetch(`/api/conversations?conversationId=${conversationId}`, {
+    const response = await fetch(`/api/conversations/${conversationId}`, {
         method: 'DELETE',
     });
 

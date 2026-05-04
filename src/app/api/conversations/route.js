@@ -1,48 +1,13 @@
-import { prisma } from '../db';
+import { getConversations, postNewConversation } from '../../../server/conversations';
 
 export async function GET() {
-    const data = await prisma.conversation.findMany({
-        orderBy: { createdAt: 'desc' },
-    });
+    const data = await getConversations();
     return Response.json(data);
 }
 
 export async function POST(request) {
     const body = await request.json();
-    const newConversation = await prisma.conversation.create({
-        data: { header: body.newConversationHeader },
-    });
-
-    const newChatId = newConversation.id;
-
-    const newConversations = await prisma.conversation.findMany({
-        orderBy: { createdAt: 'desc' },
-    });
+    const { newConversations, newChatId } = await postNewConversation(body.newConversationHeader);
 
     return Response.json({ newConversations, newChatId });
-}
-
-export async function DELETE(request) {
-    const url = new URL(request.url);
-    const conversationId = url.searchParams.get('conversationId');
-
-    if (!conversationId) {
-        return Response.json({ error: 'Missing conversationId' }, { status: 400 });
-    }
-
-    try {
-        await prisma.message.deleteMany({ where: { conversationId } });
-        await prisma.conversation.delete({ where: { id: conversationId } });
-    } catch {
-        return Response.json({ error: 'Conversation not found' }, { status: 404 });
-    }
-
-    const nextConversation = await prisma.conversation.findFirst({
-        orderBy: { createdAt: 'desc' },
-    });
-
-    return Response.json({
-        deletedConversationId: conversationId,
-        nextConversationId: nextConversation?.id ?? null,
-    });
 }

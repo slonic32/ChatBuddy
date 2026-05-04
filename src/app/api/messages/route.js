@@ -1,33 +1,4 @@
-import { sendQuestion } from '../openrouter';
-import { prisma } from '../db';
-
-async function postNewMessage(conversationId, role, content) {
-    await prisma.message.create({
-        data: { role: role, content: content, conversationId: conversationId },
-    });
-
-    const oldConversationMessages = await prisma.message.findMany({
-        where: { conversationId: conversationId },
-        orderBy: { createdAt: 'asc' },
-    });
-
-    if (role === 'user') {
-        const answer = await sendQuestion(
-            oldConversationMessages.map((message) => ({ role: message.role, content: message.content })),
-        );
-
-        await prisma.message.create({
-            data: { role: 'assistant', content: answer, conversationId: conversationId },
-        });
-    }
-
-    const conversationMessages = await prisma.message.findMany({
-        where: { conversationId: conversationId },
-        orderBy: { createdAt: 'asc' },
-    });
-
-    return conversationMessages;
-}
+import { postMessage, getMessages } from '../../../server/messages';
 
 export async function GET(request) {
     const url = new URL(request.url);
@@ -37,15 +8,12 @@ export async function GET(request) {
         return Response.json([]);
     }
 
-    const data = await prisma.message.findMany({
-        where: { conversationId: conversationId },
-        orderBy: { createdAt: 'asc' },
-    });
+    const data = await getMessages(conversationId);
     return Response.json(data);
 }
 
 export async function POST(request) {
     const body = await request.json();
-    const conversationMessages = await postNewMessage(body.conversationId, body.role, body.content);
+    const conversationMessages = await postMessage(body.conversationId, body.role, body.content);
     return Response.json(conversationMessages);
 }
