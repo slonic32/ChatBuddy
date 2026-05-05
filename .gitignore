@@ -36,3 +36,5 @@ lerna-debug.log*
 /src/generated/prisma
 
 dev.db
+.vercel
+.env*.local
