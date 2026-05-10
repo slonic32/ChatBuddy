@@ -15,6 +15,7 @@ self.addEventListener('activate', (event) => {
 
 self.addEventListener('fetch', (event) => {
     const { request } = event;
+    const url = new URL(request.url);
 
     if (request.method !== 'GET') return;
 
@@ -23,9 +24,10 @@ self.addEventListener('fetch', (event) => {
     if (request.mode === 'navigate') {
         event.respondWith(
             fetch(request).catch(() => {
-                caches.match('/offline.html');
+                return caches.match('/offline.html');
             }),
         );
+        return;
     }
 
     event.respondWith(
@@ -35,6 +37,8 @@ self.addEventListener('fetch', (event) => {
                 caches.open(CACHE).then((c) => c.put(request, copy));
                 return res;
             })
-            .catch(() => caches.match(request)),
+            .catch(() => {
+                return caches.match(request);
+            }),
     );
 });
