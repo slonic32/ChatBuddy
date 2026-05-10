@@ -1,5 +1,13 @@
 const CACHE = 'chatbuddy-v1';
-const SHELL = ['/', '/manifest.webmanifest', '/icon-192.png', '/offline.html'];
+const SHELL = [
+    '/',
+    '/manifest.webmanifest',
+    '/icon-192.png',
+    '/icon-512.png',
+    '/icon-maskable-512.png',
+    '/apple-touch-icon.png',
+    '/offline.html',
+];
 
 self.addEventListener('install', (event) => {
     event.waitUntil(caches.open(CACHE).then((c) => c.addAll(SHELL)));
