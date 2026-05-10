@@ -2,6 +2,7 @@ import './globals.css';
 import Footer from '../components/Footer/Footer';
 import { Providers } from './providers';
 import { Metadata, Viewport } from 'next';
+import { ServiceWorkerRegister } from '../components/ServiceWorkerRegister/ServiceWorkerRegister';
 
 export const metadata: Metadata = {
     title: 'ChatBuddy AI Chat',
@@ -32,6 +33,7 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
                         {children}
 
                         <Footer></Footer>
+                        <ServiceWorkerRegister />
                     </div>
                 </Providers>
             </body>
